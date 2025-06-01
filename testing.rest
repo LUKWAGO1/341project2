@@ -1,11 +1,11 @@
 ### Get all contacts
-GET http://localhost:3001/books
+GET http://localhost:3000/books
 
 ### Get a contact by ID
-GET http://localhost:3001/books/682ef24895f4cbf0e42ef90e
+GET http://localhost:3000/books/682ef24895f4cbf0e42ef90e
 
 ### Create a new contact
-POST http://localhost:3001/books
+POST http://localhost:3000/books
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Update a contact by ID
-PUT http://localhost:3001/books/682ef24895f4cbf0e42ef90e
+PUT http://localhost:3000/books/682ef24895f4cbf0e42ef90e
 Content-Type: application/json
 
 {
