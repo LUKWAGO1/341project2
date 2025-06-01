@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongodb');
-const db = require('../config/database');
+const db = require('../data/database');
 
 class Author {
   static async checkConnection() {

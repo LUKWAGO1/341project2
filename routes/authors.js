@@ -1,7 +1,7 @@
 // ===== routes/authors.js =====
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database');  // Import db directly
+const db = require('../data/database');  // Import db directly
 const Author = require('../models/Author');
 const authorControllers = require('../controllers/authorControllers');
 
