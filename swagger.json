@@ -5,11 +5,10 @@
     "description": "API for managing books and authors with CRUD operations",
     "version": "1.0.0"
   },
-  "host": "https://three41project2.onrender.com",
+  "host": "three41project2.onrender.com",
   "basePath": "/",
   "schemes": [
-    "https",
-    "http"
+    "https"
   ],
   "paths": {
     "/": {

@@ -1,11 +1,11 @@
-### Get all contacts
+### Get all books
 GET http://localhost:3000/books
 
-### Get a contact by ID
-GET http://localhost:3000/books/682ef24895f4cbf0e42ef90e
+### Get a books by ID
+GET http://localhost:3000/books/
 
-### Create a new contact
-POST http://localhost:3000/books
+### Create a new book
+POST http://localhost:3000/books/9780743273565
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Update a contact by ID
-PUT http://localhost:3000/books/682ef24895f4cbf0e42ef90e
+PUT http://localhost:3000/books/9780743273565
 Content-Type: application/json
 
 {
@@ -33,4 +33,4 @@ Content-Type: application/json
 }
 
 ### Delete a contact
-DELETE http://localhost:3000/books/6826f664b6b9393f5128d9d1
+DELETE http://localhost:3000/books/9780743273565
