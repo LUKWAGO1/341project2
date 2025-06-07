@@ -469,7 +469,7 @@ const getCallbackURL = () => {
   }
   
   if (process.env.NODE_ENV === 'production') {
-    return 'https://cse340-two.onrender.com/auth/github/callback';
+    return 'https://three41project2.onrender.com/auth/github/callback';
   }
   
   return `http://localhost:${process.env.PORT || 3000}/auth/github/callback`;
