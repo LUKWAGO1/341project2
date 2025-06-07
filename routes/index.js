@@ -472,7 +472,7 @@ const getCallbackURL = () => {
     return 'https://three41project2.onrender.com/auth/github/callback';
   }
   
-  return `http://localhost:${process.env.PORT || 3000}/auth/github/callback`;
+  return `http://localhost:${process.env.PORT || 5000}/auth/github/callback`;
 };
 
 // REPLACE THE OLD CALLBACK WITH THIS ENHANCED VERSION
@@ -572,15 +572,15 @@ router.get('/debug/env', isAuthenticated, (req, res) => { // Add isAuthenticated
   
   const callbackURL = process.env.GITHUB_CALLBACK_URL || 
     (process.env.NODE_ENV === 'production' 
-      ? 'https://cse340-two.onrender.com/auth/github/callback'
-      : `http://localhost:${process.env.PORT || 3000}/auth/github/callback`);
+      ? 'https://three41project2.onrender.com/auth/github/callback'
+      : `http://localhost:${process.env.PORT || 5000}/auth/github/callback`);
   
   res.json({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ? '✅ Set' : '❌ Missing',
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET ? '✅ Set' : '❌ Missing',
     GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL || '❌ Using default',
     ACTUAL_CALLBACK_URL: callbackURL,
-    PORT: process.env.PORT || 3000,
+    PORT: process.env.PORT || 5000,
     NODE_ENV: process.env.NODE_ENV || 'development',
     SESSION_SECRET: process.env.SESSION_SECRET ? '✅ Set' : '❌ Missing'
   });
