@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const passport = require('passport');
+const jwt = require('jsonwebtoken'); // Add jwt module
 
 router.use('/', require('./swagger'));
 
@@ -436,31 +437,17 @@ router.get('/temp-login', (req, res) => {
   });
 });
 
-// Start GitHub OAuth login with enhanced debugging
-router.get('/login', (req, res, next) => {
-  console.log('🔐 Starting GitHub OAuth login...');
-  console.log('🔗 Callback URL will be:', getCallbackURL());
-  console.log('GitHub Client ID:', process.env.GITHUB_CLIENT_ID ? 'Set' : 'MISSING');
-  console.log('GitHub Client Secret:', process.env.GITHUB_CLIENT_SECRET ? 'Set' : 'MISSING');
-  
-  // Check if required environment variables are missing
-  if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
-    console.error('❌ Missing GitHub OAuth credentials');
-    return res.send(`
-      <h1>OAuth Configuration Error</h1>
-      <p><strong>GitHub Client ID:</strong> ${process.env.GITHUB_CLIENT_ID ? '✅ Set' : '❌ Missing'}</p>
-      <p><strong>GitHub Client Secret:</strong> ${process.env.GITHUB_CLIENT_SECRET ? '✅ Set' : '❌ Missing'}</p>
-      <p><strong>Expected Callback URL:</strong> ${getCallbackURL()}</p>
-      <hr>
-      <p>Please check your environment variables and GitHub OAuth app configuration.</p>
-      <a href="/">Go Home</a>
-    `);
+// GitHub OAuth login
+router.get('/login', passport.authenticate('github', { scope: ['user:email'] }));
+
+// GitHub OAuth callback
+router.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/?error=oauth_failed' }),
+  (req, res) => {
+    req.session.user = req.user;
+    res.redirect('/');
   }
-  
-  passport.authenticate('github', {
-    scope: ['user:email']
-  })(req, res, next);
-});
+);
 
 // Function to get the correct callback URL (moved here for access)
 const getCallbackURL = () => {
@@ -469,75 +456,11 @@ const getCallbackURL = () => {
   }
   
   if (process.env.NODE_ENV === 'production') {
-    return 'https://three41project2.onrender.com/auth/github/callback';
+    return 'https://cse340-two.onrender.com/auth/github/callback';
   }
   
-  return `http://localhost:${process.env.PORT || 5000}/auth/github/callback`;
+  return `http://localhost:${process.env.PORT || 3000}/auth/github/callback`;
 };
-
-// REPLACE THE OLD CALLBACK WITH THIS ENHANCED VERSION
-router.get('/auth/github/callback', (req, res, next) => {
-  console.log('📥 Received GitHub callback');
-  console.log('Query params:', req.query);
-  console.log('Full URL:', req.url);
-  console.log('Original URL:', req.originalUrl);
-  console.log('Headers:', req.headers);
-  console.log('Expected callback URL:', getCallbackURL());
-  
-  // Check for error in callback
-  if (req.query.error) {
-    console.error('❌ GitHub OAuth error:', req.query.error);
-    console.error('Error description:', req.query.error_description);
-    return res.redirect('/?error=oauth_denied');
-  }
-
-  // Check for code parameter
-  if (!req.query.code) {
-    console.error('❌ No authorization code received');
-    console.error('This usually means:');
-    console.error('1. GitHub OAuth app callback URL mismatch');
-    console.error('2. Missing or incorrect environment variables');
-    console.error('3. GitHub app not properly configured');
-    
-    // Return debug information to help diagnose
-    return res.send(`
-      <h1>OAuth Debug Information</h1>
-      <p><strong>Expected Callback URL:</strong> ${getCallbackURL()}</p>
-      <p><strong>Received URL:</strong> ${req.originalUrl}</p>
-      <p><strong>Query Parameters:</strong> ${JSON.stringify(req.query)}</p>
-      <p><strong>GitHub Client ID:</strong> ${process.env.GITHUB_CLIENT_ID ? 'Set' : 'Missing'}</p>
-      <p><strong>GitHub Client Secret:</strong> ${process.env.GITHUB_CLIENT_SECRET ? 'Set' : 'Missing'}</p>
-      <hr>
-      <p><strong>Instructions:</strong></p>
-      <ol>
-        <li>Check your GitHub OAuth app settings</li>
-        <li>Ensure the callback URL exactly matches: <code>${getCallbackURL()}</code></li>
-        <li>Verify all environment variables are set</li>
-      </ol>
-      <a href="/">Go Home</a>
-    `);
-  }
-
-  console.log('✅ Authorization code received, proceeding with authentication...');
-  next();
-}, passport.authenticate('github', { 
-  failureRedirect: '/?error=oauth_failed',
-  failureFlash: false
-}), (req, res) => {
-  // Success callback
-  console.log('✅ GitHub authentication successful');
-  console.log('User:', req.user?.username || req.user?.displayName);
-  
-  req.session.user = req.user;
-  req.session.save((err) => {
-    if (err) {
-      console.error('❌ Session save error:', err);
-      return res.redirect('/?error=login_failed');
-    }
-    console.log('✅ Session saved successfully');
-    res.redirect('/');
-  });
-});
 
 // Enhanced logout with session cleanup
 router.get('/logout', function(req, res, next){
@@ -572,17 +495,39 @@ router.get('/debug/env', isAuthenticated, (req, res) => { // Add isAuthenticated
   
   const callbackURL = process.env.GITHUB_CALLBACK_URL || 
     (process.env.NODE_ENV === 'production' 
-      ? 'https://three41project2.onrender.com/auth/github/callback'
-      : `http://localhost:${process.env.PORT || 5000}/auth/github/callback`);
+      ? 'https://cse340-two.onrender.com/auth/github/callback'
+      : `http://localhost:${process.env.PORT || 3000}/auth/github/callback`);
   
   res.json({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ? '✅ Set' : '❌ Missing',
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET ? '✅ Set' : '❌ Missing',
     GITHUB_CALLBACK_URL: process.env.GITHUB_CALLBACK_URL || '❌ Using default',
     ACTUAL_CALLBACK_URL: callbackURL,
-    PORT: process.env.PORT || 5000,
+    PORT: process.env.PORT || 3000,
     NODE_ENV: process.env.NODE_ENV || 'development',
     SESSION_SECRET: process.env.SESSION_SECRET ? '✅ Set' : '❌ Missing'
+  });
+});
+
+// JWT token generation route for Swagger UI
+router.get('/generate-token', (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({
+      error: 'Not authenticated',
+      message: 'Please log in with GitHub at /login before generating a token.'
+    });
+  }
+  const token = jwt.sign(
+    {
+      id: req.session.user.id,
+      username: req.session.user.username || req.session.user.displayName
+    },
+    process.env.SESSION_SECRET || 'your-secret-key-here',
+    { expiresIn: '24h' }
+  );
+  res.json({
+    token,
+    usage: "In Swagger UI, click 'Authorize' and enter: Bearer <token>"
   });
 });
 

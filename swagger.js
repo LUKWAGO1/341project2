@@ -11,8 +11,8 @@ const options = {
     servers: [
       {
         url: process.env.NODE_ENV === 'production' 
-          ? 'https://three41project2.onrender.com' 
-          : 'http://localhost:3000',
+          ? 'https://three41project2-1.onrender.com' 
+          : 'http://localhost:5000',
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
     ],

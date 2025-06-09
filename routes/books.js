@@ -4,10 +4,7 @@ const db = require('../data/database');
 const Book = require('../models/Book');
 const { isAuthenticated } = require('../middleware/authenticate');
 
-// Apply authentication middleware to all routes in this file
-router.use(isAuthenticated);
-
-// Simplified middleware
+// Connection check middleware
 router.use(async (req, res, next) => {
   try {
     await db.checkConnection();
@@ -22,7 +19,7 @@ router.use(async (req, res, next) => {
   }
 });
 
-// GET all books
+// GET all books (public)
 router.get('/', async (req, res) => {
   try {
     console.log('Fetching all books...');
@@ -45,7 +42,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single book
+// GET single book (public)
 router.get('/:id', async (req, res) => {
   try {
     console.log('Fetching book with ID:', req.params.id);
@@ -71,8 +68,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST create book
-router.post('/', async (req, res) => {
+// POST create book (protected)
+router.post('/', isAuthenticated, async (req, res) => {
   try {
     console.log('Creating book with data:', req.body);
     
@@ -100,8 +97,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT update book
-router.put('/:id', async (req, res) => {
+// PUT update book (protected)
+router.put('/:id', isAuthenticated, async (req, res) => {
   try {
     const result = await Book.update(req.params.id, req.body);
     
@@ -127,8 +124,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE book
-router.delete('/:id', async (req, res) => {
+// DELETE book (protected)
+router.delete('/:id', isAuthenticated, async (req, res) => {
   try {
     const result = await Book.delete(req.params.id);
     
