@@ -19,8 +19,8 @@ router.use(async (req, res, next) => {
   }
 });
 
-// GET all authors (public)
-router.get('/', async (req, res) => {
+// GET all authors (protected)
+router.get('/', isAuthenticated, async (req, res) => {
   try {
     console.log('Fetching all authors...');
     const authors = await Author.findAll();
@@ -41,8 +41,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single author by ID (public)
-router.get('/:id', async (req, res) => {
+// GET single author by ID (protected)
+router.get('/:id', isAuthenticated, async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Fetching author by ID:', id);

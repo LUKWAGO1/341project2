@@ -5,10 +5,10 @@
     "description": "API for managing books and authors with CRUD operations",
     "version": "1.0.0"
   },
-  "host": "localhost:5000",
+  "host": "three41project2-1.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
     "/": {

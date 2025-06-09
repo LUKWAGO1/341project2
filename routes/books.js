@@ -19,8 +19,8 @@ router.use(async (req, res, next) => {
   }
 });
 
-// GET all books (public)
-router.get('/', async (req, res) => {
+// GET all books (protected)
+router.get('/', isAuthenticated, async (req, res) => {
   try {
     console.log('Fetching all books...');
     const books = await Book.findAll();
@@ -42,8 +42,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single book (public)
-router.get('/:id', async (req, res) => {
+// GET single book (protected)
+router.get('/:id', isAuthenticated, async (req, res) => {
   try {
     console.log('Fetching book with ID:', req.params.id);
     const book = await Book.findById(req.params.id);
