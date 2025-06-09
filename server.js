@@ -29,15 +29,10 @@ app.use(passport.session());
 
 // Function to get the correct callback URL based on environment
 const getCallbackURL = () => {
-  if (process.env.GITHUB_CALLBACK_URL) {
-    return process.env.GITHUB_CALLBACK_URL;
+  if (!process.env.GITHUB_CALLBACK_URL) {
+    throw new Error('GITHUB_CALLBACK_URL is not defined in .env');
   }
-  
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://three41project2-1.onrender.com/auth/github/callback';
-  }
-  
-  return `http://localhost:${port}/auth/github/callback`;
+  return process.env.GITHUB_CALLBACK_URL;
 };
 
 // Passport GitHub Strategy

@@ -449,17 +449,12 @@ router.get('/auth/github/callback',
   }
 );
 
-// Function to get the correct callback URL (moved here for access)
+// Function to get the correct callback URL (updated to only use .env value)
 const getCallbackURL = () => {
-  if (process.env.GITHUB_CALLBACK_URL) {
-    return process.env.GITHUB_CALLBACK_URL;
+  if (!process.env.GITHUB_CALLBACK_URL) {
+    throw new Error('GITHUB_CALLBACK_URL is not defined in .env');
   }
-  
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://cse340-two.onrender.com/auth/github/callback';
-  }
-  
-  return `http://localhost:${process.env.PORT || 3000}/auth/github/callback`;
+  return process.env.GITHUB_CALLBACK_URL;
 };
 
 // Enhanced logout with session cleanup
@@ -493,10 +488,7 @@ router.get('/debug/env', isAuthenticated, (req, res) => { // Add isAuthenticated
     return res.status(404).send('Not found');
   }
   
-  const callbackURL = process.env.GITHUB_CALLBACK_URL || 
-    (process.env.NODE_ENV === 'production' 
-      ? 'https://cse340-two.onrender.com/auth/github/callback'
-      : `http://localhost:${process.env.PORT || 3000}/auth/github/callback`);
+  const callbackURL = process.env.GITHUB_CALLBACK_URL;
   
   res.json({
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ? '✅ Set' : '❌ Missing',
