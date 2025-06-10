@@ -7,8 +7,8 @@
   },
   "host": "three41project2.onrender.com",
   "basePath": "/",
-  "schemes": [  
-    "http"
+  "schemes": [
+    "https"
   ],
   "paths": {
     "/": {

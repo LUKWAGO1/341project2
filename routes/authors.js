@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../data/database');
 const Author = require('../models/Author');
-const { isAuthenticated } = require('../middleware/authenticate');
 
 // Connection check middleware
 router.use(async (req, res, next) => {
@@ -19,8 +18,8 @@ router.use(async (req, res, next) => {
   }
 });
 
-// GET all authors (protected)
-router.get('/', isAuthenticated, async (req, res) => {
+// GET all authors
+router.get('/', async (req, res) => {
   try {
     console.log('Fetching all authors...');
     const authors = await Author.findAll();
@@ -41,8 +40,8 @@ router.get('/', isAuthenticated, async (req, res) => {
   }
 });
 
-// GET single author by ID (protected)
-router.get('/:id', isAuthenticated, async (req, res) => {
+// GET single author by ID
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     console.log('Fetching author by ID:', id);
@@ -68,8 +67,8 @@ router.get('/:id', isAuthenticated, async (req, res) => {
   }
 });
 
-// POST create new author (protected)
-router.post('/', isAuthenticated, async (req, res) => {
+// POST create new author
+router.post('/', async (req, res) => {
   try {
     const { name, email, bio } = req.body;
     
@@ -104,8 +103,8 @@ router.post('/', isAuthenticated, async (req, res) => {
   }
 });
 
-// PUT update author (protected)
-router.put('/:id', isAuthenticated, async (req, res) => {
+// PUT update author
+router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = { ...req.body, updatedAt: new Date() };
@@ -133,8 +132,8 @@ router.put('/:id', isAuthenticated, async (req, res) => {
   }
 });
 
-// DELETE author (protected)
-router.delete('/:id', isAuthenticated, async (req, res) => {
+// DELETE author
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const result = await Author.delete(id);
